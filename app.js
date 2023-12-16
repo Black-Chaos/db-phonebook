@@ -2,6 +2,7 @@ const express = require('express')
 const logger = require('morgan')
 const cors = require('cors')
 require('dotenv').config();
+const router = require('./routes/contacts')
 
 // const contactsRouter = require('./routes/api/contacts')
 
@@ -13,6 +14,9 @@ app.use(logger(formatsLogger))
 app.use(cors())
 app.use(express.json())
 
+const pathDB = '/contacts';
+
+app.use(pathDB, router)
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Not found' })
