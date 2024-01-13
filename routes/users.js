@@ -1,21 +1,26 @@
 const { Router } = require("express");
-// const { contactsController } = require("../controllers");
+
 const {
   userRegisterSchema,
   userLoginSchema,
 } = require("../schemas/userSchema");
-const validateBody = require("../middlewares/valedateBody");
 
-const { register, login } = require("../controllers/usersControllers");
+const { validateBody, isAuth } = require("../middlewares");
+
+const { usersControllers } = require("../controllers");
 
 const router = Router();
 
 router.get("/current");
 
-router.post("/signup", validateBody(userRegisterSchema), register);
+router.post(
+  "/signup",
+  validateBody(userRegisterSchema),
+  usersControllers.register
+);
 
-router.post("/login", validateBody(userLoginSchema), login);
+router.post("/login", validateBody(userLoginSchema), usersControllers.login);
 
-router.post("/logout");
+router.post("/logout", isAuth);
 
 module.exports = router;

@@ -9,7 +9,8 @@ const register = async (req, res) => {
   const user = await User.findOne({ email });
 
   if (user) {
-    return res.status(409).json({ message: "Email in use" });
+    res.status(409).json({ message: "Email in use" });
+    return;
   }
 
   const avatar = gravatar.url(email);
