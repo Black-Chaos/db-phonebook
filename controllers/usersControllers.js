@@ -6,7 +6,7 @@ const { SECRET_KEY } = process.env;
 const register = async (req, res) => {
   const { name, email, password } = req.body;
 
-  const user = await User.find({ email });
+  const user = await User.findOne({ email });
 
   if (user) {
     return res.status(409).json({ message: "Email in use" });
@@ -25,6 +25,54 @@ const register = async (req, res) => {
   const token = jsonwebtoken.sign(payload, SECRET_KEY);
 
   await User.findByIdAndUpdate(newUser._id, { token });
+
+  res.status(201).json({
+    token,
+    user: {
+      name,
+      email,
+      avatar,
+    },
+  });
 };
 
-module.exports = { register };
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    res.status(401).json({
+      message: "Login and password is not correct",
+    });
+    return;
+  }
+
+  const isEqual = user.comparePasswords(password);
+
+  if (!isEqual) {
+    res.status(401).json({
+      message: "Login and password is not correct",
+    });
+    return;
+  }
+
+  const payload = { id: user._id };
+
+  const token = jsonwebtoken.sign(payload, SECRET_KEY);
+
+  await User.findByIdAndUpdate(user._id, { token });
+
+  res.json({
+    token,
+    user: {
+      name: user.name,
+      email,
+      avatar: user.avatar,
+    },
+  });
+};
+
+const logout = async (req, res) => {};
+
+module.exports = { register, login };

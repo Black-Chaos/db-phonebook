@@ -31,4 +31,10 @@ userSchema.methods.hashPassword = async function () {
   this.password = await bcrypt.hash(this.password, 10);
 };
 
-exports.UserModel = model("user", userSchema);
+userSchema.methods.comparePasswords = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
+
+const UserModel = model("user", userSchema);
+
+module.exports = UserModel;
