@@ -4,11 +4,12 @@ const { SECRET_KEY } = process.env;
 
 const isAuth = async (req, res, next) => {
   const { authorization = "" } = req.headers;
+  console.log("authorization:", authorization)
 
   const [bearer, token] = authorization.split(" ");
 
   if (bearer != "Bearer") {
-    res.status(401).json({ message: "No autorize" });
+    res.status(401).json({ message: "No autorize1" });
     return;
   }
 
@@ -18,7 +19,7 @@ const isAuth = async (req, res, next) => {
     const user = await User.findById(id);
 
     if (!user || !user.token || user.token != token) {
-      res.status(401).json({ message: "No autorize" });
+      res.status(401).json({ message: "No autorize2" });
       return;
     }
 
@@ -26,7 +27,7 @@ const isAuth = async (req, res, next) => {
 
     next();
   } catch (error) {
-    res.status(401).json({ message: "No autorize" });
+    res.status(401).json({ message: "No autorize3" });
   }
 };
 

@@ -8,10 +8,9 @@ const {
 const { validateBody, isAuth } = require("../middlewares");
 
 const { usersControllers } = require("../controllers");
+const upload = require("../middlewares/fileUpload");
 
 const router = Router();
-
-router.get("/current");
 
 router.post(
   "/signup",
@@ -21,6 +20,9 @@ router.post(
 
 router.post("/login", validateBody(userLoginSchema), usersControllers.login);
 
-router.post("/logout", isAuth);
+router.use(isAuth)
+router.post("/logout", usersControllers.logout);
+router.get("/current", usersControllers.current);
+router.patch('/avatar', upload.single('avatar'), usersControllers.updateAvatars)
 
 module.exports = router;

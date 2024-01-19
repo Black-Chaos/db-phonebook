@@ -1,10 +1,16 @@
-const { getContact } = require("../db/services/contactServices")
+const contactServices = require("../db/services/contactServices")
 
-const getAllContact = async (req, res) => {
-    const contacts = await getContact();
+exports.getAllContact = async (req, res) => {
+    const contacts = await contactServices.getContact(req.user._id);
     res.json(contacts)
 }
 
-module.exports = {
-    getAllContact,
+exports.addContact = async (req, res) => {
+    const contact = await contactServices.addContact(req.body, req.user._id)
+    res.json(contact)
+}
+
+exports.deleteContact = async (req, res) => {
+    await contactServices.deleteContact(req.params.contactId, req.user._id);
+    res.sendStatus(204)
 }

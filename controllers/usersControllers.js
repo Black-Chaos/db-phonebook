@@ -1,7 +1,9 @@
 const User = require("../db/models/user-model");
 const jsonwebtoken = require("jsonwebtoken");
 const gravatar = require("gravatar");
+const path = require('path');
 const { SECRET_KEY } = process.env;
+const fs = require('fs/promises');
 
 const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -74,6 +76,38 @@ const login = async (req, res) => {
   });
 };
 
-const logout = async (req, res) => {};
+const logout = async (req, res) => {
+  const { _id } = req.user;
+  await User.findByIdAndUpdate(_id, { token: '' })
+  res.sendStatus(204);
+};
 
-module.exports = { register, login };
+const current = (req, res) => {
+  const { name, email, avatar } = req.user;
+
+   res.json({
+      name,
+      email,
+      avatar,
+  });
+}
+
+const updateAvatars = async (req, res, next) => {
+  const { _id } = req.user;
+    const avatarsDir = path.resolve('public', 'avatars');
+  if (!req.file) {
+      res.status(400).json({message: 'No file attached'})
+    }
+    const { path: tempUpload, originalname } = req.file;
+
+  const newFileName = `${_id}-${originalname}`
+    const resultUpload = path.join(avatarsDir, newFileName);
+    await fs.rename(tempUpload, resultUpload);
+
+    const coverPath = path.join('avatars', newFileName);
+
+    await User.findByIdAndUpdate(_id, { avatarURL: coverPath });
+    res.status(200).json({ avatarURL: coverPath });
+};
+
+module.exports = { register, login, logout, current, updateAvatars };

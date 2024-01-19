@@ -1,7 +1,7 @@
 const {ContactModel} = require('../models/contact-model');
 
-const getContact = async () => await ContactModel.find();
+exports.getContact =  (owner) => ContactModel.find({owner});
 
-module.exports = {
-    getContact,
-}
+exports.addContact = (body, owner) => ContactModel.create({ ...body, owner })
+
+exports.deleteContact = (id, owner) => ContactModel.findOneAndDelete({_id: id, owner})
